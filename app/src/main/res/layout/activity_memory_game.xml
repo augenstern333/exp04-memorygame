@@ -3,23 +3,29 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:padding="16dp"
+    android:fitsSystemWindows="true">
 
-    <!-- 顶部状态栏：步数 + 已配对数 -->
+    <!-- 顶部状态栏：分数 + 已配对数 -->
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="56dp"
         android:orientation="horizontal"
-        android:layout_marginBottom="16dp">
+        android:layout_marginBottom="16dp"
+        android:background="#EEEEEE"
+        android:gravity="center_vertical"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp">
 
         <TextView
             android:id="@+id/tv_moves"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@string/label_moves"
+            android:text="@string/label_score"
             android:textSize="18sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:textColor="#000000" />
 
         <TextView
             android:id="@+id/tv_pairs"
@@ -29,6 +35,7 @@
             android:text="@string/label_pairs"
             android:textSize="18sp"
             android:textStyle="bold"
+            android:textColor="#000000"
             android:gravity="end" />
     </LinearLayout>
 

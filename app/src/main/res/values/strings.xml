@@ -34,10 +34,10 @@
 
     <!-- MemoryGameActivity：翻牌游戏 -->
     <string name="title_memory_game">翻牌游戏</string>
-    <string name="label_moves">步数：</string>
+    <string name="label_score">分数：</string>
     <string name="label_pairs">已配对：</string>
     <string name="btn_restart">重新开始</string>
-    <string name="game_win">恭喜你赢了！用时 %1$d 步</string>
+    <string name="game_win">恭喜你赢了！最终得分 %1$d 分</string>
     <string name="card_back">?</string>
 
     <!-- Toast 提示 -->
