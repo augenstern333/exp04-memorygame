@@ -2,43 +2,61 @@
     <!-- APP 标题 = 姓名+学号 -->
     <string name="app_name">刘胜敏2024110523</string>
 
+    <!-- 头像 -->
+    <string name="label_avatar">头像</string>
+    <string name="btn_camera">拍照</string>
+
     <!-- MainActivity：玩家信息展示 -->
     <string name="title_player_info">玩家基本信息</string>
     <string name="label_name">姓名：</string>
     <string name="label_gender">性别：</string>
+    <string name="label_student_id">学号：</string>
     <string name="label_phone">电话：</string>
-    <string name="label_high_score">当前最高分：</string>
+    <string name="label_email">邮件地址：</string>
+    <string name="label_hobby">爱好：</string>
+    <string name="label_high_score">游戏最高分：</string>
     <string name="default_name">刘胜敏</string>
     <string name="default_gender">女</string>
+    <string name="default_student_id">2024110523</string>
     <string name="default_phone">13800138000</string>
+    <string name="default_email">liushimin@example.com</string>
+    <string name="default_hobby">阅读、游戏</string>
     <string name="default_high_score">0</string>
-    <string name="score_unit">分</string>
 
     <!-- 主界面按钮 -->
     <string name="btn_edit_info">修改个人信息</string>
-    <string name="btn_play_game">开始翻牌游戏</string>
+    <string name="btn_play_game">翻牌游戏</string>
 
     <!-- EditInfoActivity：信息修改 -->
-    <string name="title_edit_info">修改个人信息</string>
-    <string name="hint_name">请输入姓名</string>
-    <string name="hint_gender">请输入性别</string>
-    <string name="hint_phone">请输入电话</string>
+    <string name="title_edit_info">信息修改</string>
+    <string name="hint_name">姓名</string>
+    <string name="hint_student_id">学号</string>
+    <string name="hint_phone">电话号码</string>
+    <string name="hint_email">电子邮件地址</string>
+    <string name="gender_male">男</string>
+    <string name="gender_female">女</string>
+    <string name="hobby_travel">旅游</string>
+    <string name="hobby_reading">阅读</string>
+    <string name="hobby_game">游戏</string>
+    <string name="hobby_shopping">购物</string>
     <string name="btn_save">保存</string>
     <string name="btn_cancel">取消</string>
 
     <!-- Intent extra keys -->
     <string name="extra_name">extra_name</string>
     <string name="extra_gender">extra_gender</string>
+    <string name="extra_student_id">extra_student_id</string>
     <string name="extra_phone">extra_phone</string>
+    <string name="extra_email">extra_email</string>
+    <string name="extra_hobby">extra_hobby</string>
     <string name="extra_high_score">extra_high_score</string>
 
     <!-- MemoryGameActivity：翻牌游戏 -->
     <string name="title_memory_game">翻牌游戏</string>
-    <string name="label_score">分数：</string>
-    <string name="label_pairs">已配对：</string>
-    <string name="btn_restart">重新开始</string>
+    <string name="label_score">得分：</string>
+    <string name="btn_restart">重置游戏</string>
+    <string name="btn_exit">退出</string>
     <string name="game_win">恭喜你赢了！最终得分 %1$d 分</string>
-    <string name="card_back">?</string>
 
     <!-- Toast 提示 -->
     <string name="info_saved">信息已保存</string>

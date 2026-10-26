@@ -6,19 +6,26 @@
     android:padding="16dp"
     android:fitsSystemWindows="true">
 
-    <!-- 顶部状态栏：分数 + 已配对数 -->
+    <!-- 翻牌游戏区域：4列4行 = 16张牌 -->
+    <GridLayout
+        android:id="@+id/grid_cards"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:columnCount="4"
+        android:rowCount="4"
+        android:padding="8dp" />
+
+    <!-- 底部栏：得分 + 重置游戏 + 退出 -->
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="56dp"
+        android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_marginBottom="16dp"
-        android:background="#EEEEEE"
-        android:gravity="center_vertical"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp">
+        android:layout_marginTop="16dp"
+        android:gravity="center_vertical">
 
         <TextView
-            android:id="@+id/tv_moves"
+            android:id="@+id/tv_score"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -27,34 +34,18 @@
             android:textStyle="bold"
             android:textColor="#000000" />
 
-        <TextView
-            android:id="@+id/tv_pairs"
-            android:layout_width="0dp"
+        <Button
+            android:id="@+id/btn_restart"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/label_pairs"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:textColor="#000000"
-            android:gravity="end" />
+            android:text="@string/btn_restart"
+            android:layout_marginEnd="8dp" />
+
+        <Button
+            android:id="@+id/btn_exit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/btn_exit" />
     </LinearLayout>
-
-    <!-- 翻牌游戏区域：4列3行 = 12张牌 -->
-    <GridLayout
-        android:id="@+id/grid_cards"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:columnCount="4"
-        android:rowCount="3"
-        android:padding="8dp" />
-
-    <!-- 重新开始按钮 -->
-    <Button
-        android:id="@+id/btn_restart"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/btn_restart"
-        android:layout_marginTop="16dp" />
 
 </LinearLayout>

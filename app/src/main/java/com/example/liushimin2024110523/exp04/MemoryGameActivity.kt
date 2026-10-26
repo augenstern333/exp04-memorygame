@@ -16,7 +16,7 @@ import com.example.liushimin2024110523.exp04.databinding.ActivityMemoryGameBindi
  * 翻牌游戏 Activity —— MVC 模式
  *
  * Model: Card / Deck / CardMatchingGame（参考附件代码实现）
- * View:  GridLayout 中的 Button 扑克牌 + 分数状态栏
+ * View:  GridLayout 中的 Button 扑克牌 + 底部得分栏
  * Controller: MemoryGameActivity（接收点击、调用Model、同步View）
  */
 class MemoryGameActivity : AppCompatActivity() {
@@ -25,7 +25,7 @@ class MemoryGameActivity : AppCompatActivity() {
 
     // Model 层：游戏核心逻辑（来自附件参考代码）
     private lateinit var game: CardMatchingGame
-    private val cardCount = 12  // 12张牌
+    private val cardCount = 16  // 16张牌，4列4行
 
     private val handler = Handler(Looper.getMainLooper())
     private var isProcessing = false  // 配对动画期间锁定
@@ -37,9 +37,14 @@ class MemoryGameActivity : AppCompatActivity() {
 
         startNewGame()
 
-        // 重新开始按钮
+        // 重置游戏按钮
         binding.btnRestart.setOnClickListener {
             startNewGame()
+        }
+
+        // 退出按钮
+        binding.btnExit.setOnClickListener {
+            finish()
         }
     }
 
@@ -51,7 +56,7 @@ class MemoryGameActivity : AppCompatActivity() {
         updateScoreDisplay()
     }
 
-    /** View层：根据Model生成12张扑克牌按钮 */
+    /** View层：根据Model生成16张扑克牌按钮 */
     private fun buildCardViews() {
         binding.gridCards.removeAllViews()
         val margin = dpToPx(6)
@@ -60,7 +65,7 @@ class MemoryGameActivity : AppCompatActivity() {
             val card = game.cardAtIndex(i)
             val btn = Button(this).apply {
                 text = if (card.isChosen || card.isMatched) card.toString() else "?"
-                textSize = 24f
+                textSize = 20f
                 setBackgroundColor(getCardColor(card))
                 setTextColor(getCardTextColor(card))
                 setOnClickListener { onCardClicked(i) }
@@ -110,18 +115,15 @@ class MemoryGameActivity : AppCompatActivity() {
 
         // 只有当点击前已经有1张翻开的牌（即这是第二次翻牌），才需要判断是否配对失败
         val needDelayFlipBack = if (chosenBefore == 1) {
-            // 第二次翻牌后，检查两张是否配对成功
-            // 配对成功：两张都matched
-            // 配对失败：只有当前这张是chosen，另一张被翻回false了
             var chosenAfter = 0
             for (i in 0 until cardCount) {
                 if (game.cardAtIndex(i).isChosen && !game.cardAtIndex(i).isMatched) {
                     chosenAfter++
                 }
             }
-            chosenAfter == 1  // 只有一张翻开 = 配对失败，需要延迟翻回
+            chosenAfter == 1
         } else {
-            false  // 第一次翻牌，不需要延迟
+            false
         }
 
         // 刷新所有卡片显示
@@ -168,14 +170,9 @@ class MemoryGameActivity : AppCompatActivity() {
         }
     }
 
-    /** 更新分数显示 */
+    /** 更新底部分数显示 */
     private fun updateScoreDisplay() {
-        binding.tvMoves.text = getString(R.string.label_score) + game.score
-        var matched = 0
-        for (i in 0 until cardCount) {
-            if (game.cardAtIndex(i).isMatched) matched++
-        }
-        binding.tvPairs.text = getString(R.string.label_pairs) + "$matched/${cardCount / 2}"
+        binding.tvScore.text = getString(R.string.label_score) + game.score
     }
 
     private fun dpToPx(dp: Int): Int {

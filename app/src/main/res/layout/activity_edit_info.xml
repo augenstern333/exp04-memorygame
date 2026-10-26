@@ -5,15 +5,34 @@
     android:orientation="vertical"
     android:padding="24dp">
 
-    <!-- 标题 -->
-    <TextView
+    <!-- 头像 + 相机按钮 -->
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/title_edit_info"
-        android:textSize="24sp"
-        android:textStyle="bold"
+        android:orientation="horizontal"
         android:layout_gravity="center_horizontal"
-        android:layout_marginBottom="32dp" />
+        android:layout_marginBottom="24dp"
+        android:gravity="bottom">
+
+        <ImageView
+            android:id="@+id/iv_avatar"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:background="#EEEEEE"
+            android:padding="8dp"
+            android:scaleType="centerInside"
+            android:src="@android:drawable/ic_menu_my_calendar"
+            android:contentDescription="@string/label_avatar" />
+
+        <ImageButton
+            android:id="@+id/btn_camera"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="8dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@android:drawable/ic_menu_camera"
+            android:contentDescription="@string/btn_camera" />
+    </LinearLayout>
 
     <!-- 姓名输入 -->
     <com.google.android.material.textfield.TextInputLayout
@@ -29,25 +48,25 @@
             android:inputType="textPersonName" />
     </com.google.android.material.textfield.TextInputLayout>
 
-    <!-- 性别输入 -->
+    <!-- 学号输入 -->
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/et_gender"
+            android:id="@+id/et_student_id"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/hint_gender"
+            android:hint="@string/hint_student_id"
             android:inputType="text" />
     </com.google.android.material.textfield.TextInputLayout>
 
-    <!-- 电话输入 -->
+    <!-- 电话号码输入 -->
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="32dp">
+        android:layout_marginBottom="16dp">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/et_phone"
@@ -57,7 +76,92 @@
             android:inputType="phone" />
     </com.google.android.material.textfield.TextInputLayout>
 
-    <!-- 按钮区 -->
+    <!-- 电子邮件输入 -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/et_email"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/hint_email"
+            android:inputType="textEmailAddress" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- 性别单选按钮 -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/label_gender"
+        android:textSize="16sp"
+        android:layout_marginBottom="8dp" />
+
+    <RadioGroup
+        android:id="@+id/rg_gender"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="16dp">
+
+        <RadioButton
+            android:id="@+id/rb_male"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/gender_male"
+            android:layout_marginEnd="24dp" />
+
+        <RadioButton
+            android:id="@+id/rb_female"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/gender_female" />
+    </RadioGroup>
+
+    <!-- 爱好复选框 -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/label_hobby"
+        android:textSize="16sp"
+        android:layout_marginBottom="8dp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="24dp">
+
+        <CheckBox
+            android:id="@+id/cb_travel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/hobby_travel"
+            android:layout_marginEnd="16dp" />
+
+        <CheckBox
+            android:id="@+id/cb_reading"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/hobby_reading"
+            android:layout_marginEnd="16dp" />
+
+        <CheckBox
+            android:id="@+id/cb_game"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/hobby_game"
+            android:layout_marginEnd="16dp" />
+
+        <CheckBox
+            android:id="@+id/cb_shopping"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/hobby_shopping" />
+    </LinearLayout>
+
+    <!-- 按钮区：保存/取消并排 -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
