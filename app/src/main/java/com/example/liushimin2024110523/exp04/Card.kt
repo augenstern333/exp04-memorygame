@@ -1,25 +1,22 @@
-﻿package com.example.liushimin2024110523.exp04
+package com.example.liushimin2024110523.exp04
 
-class Card(private var suit: String, private var rank: String, var isChosen:Boolean = false, var isMatched:Boolean = false)  {
+import java.io.Serializable
+
+class Card(
+    val suit: String,
+    val rank: String,
+    var isChosen: Boolean = false,
+    var isMatched: Boolean = false
+) : Serializable {
     companion object {
-        val rankStrings= arrayOf("A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K")
+        private const val serialVersionUID = 1L
+        val rankStrings = arrayOf("A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K")
         val validSuits = arrayOf("♥", "♦", "♠", "♣")
     }
 
-    override fun toString(): String {
-        return suit + rank
-    }
+    override fun toString(): String = suit + rank
 
-    fun match(otherCards: Array<Card>): Int {
-        var score = 0
-        if (otherCards.size == 1) {
-            val otherCard = otherCards[0]
-            if (otherCard.rank == rank) {
-                score = 4
-            } else if (otherCard.suit == suit) {
-                score = 1
-            }
-        }
-        return score
-    }
+    /** Cards match by suit; rank remains available for deck identity only. */
+    fun match(otherCards: Array<Card>): Int =
+        if (otherCards.size == 1 && otherCards[0].suit == suit) 1 else 0
 }

@@ -9,19 +9,15 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.liushimin2024110523.exp04.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
-
     private lateinit var binding: ActivityMainBinding
+    private var playerName = ""
+    private var playerGender = ""
+    private var playerStudentId = ""
+    private var playerPhone = ""
+    private var playerEmail = ""
+    private var playerHobby = ""
+    private var highScore = 0
 
-    // 当前玩家信息（内存中保存，无需持久化到文件）
-    private var playerName: String = ""
-    private var playerGender: String = ""
-    private var playerStudentId: String = ""
-    private var playerPhone: String = ""
-    private var playerEmail: String = ""
-    private var playerHobby: String = ""
-    private var highScore: Int = 0
-
-    // 信息修改页面回传结果
     private val editInfoLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
@@ -38,17 +34,13 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    // 翻牌游戏页面回传最高分
     private val gameLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
-            val data = result.data ?: return@registerForActivityResult
-            val score = data.getIntExtra(getString(R.string.extra_high_score), 0)
-            if (score > highScore) {
-                highScore = score
-                refreshPlayerInfo()
-            }
+            val score = result.data?.getIntExtra(getString(R.string.extra_high_score), 0) ?: 0
+            highScore = maxOf(highScore, score)
+            refreshPlayerInfo()
         }
     }
 
@@ -56,21 +48,29 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        configureSystemBars(binding.root)
 
-        // 初始化默认玩家信息
-        playerName = getString(R.string.default_name)
-        playerGender = getString(R.string.default_gender)
-        playerStudentId = getString(R.string.default_student_id)
-        playerPhone = getString(R.string.default_phone)
-        playerEmail = getString(R.string.default_email)
-        playerHobby = getString(R.string.default_hobby)
-        highScore = getString(R.string.default_high_score).toIntOrNull() ?: 0
-
+        // Keep player information in the current task, including Activity recreation.
+        playerName = savedInstanceState?.getString(getString(R.string.extra_name))
+            ?: getString(R.string.default_name)
+        playerGender = savedInstanceState?.getString(getString(R.string.extra_gender))
+            ?: getString(R.string.default_gender)
+        playerStudentId = savedInstanceState?.getString(getString(R.string.extra_student_id))
+            ?: getString(R.string.default_student_id)
+        playerPhone = savedInstanceState?.getString(getString(R.string.extra_phone))
+            ?: getString(R.string.default_phone)
+        playerEmail = savedInstanceState?.getString(getString(R.string.extra_email))
+            ?: getString(R.string.default_email)
+        playerHobby = savedInstanceState?.getString(getString(R.string.extra_hobby))
+            ?: getString(R.string.default_hobby)
+        highScore = savedInstanceState?.getInt(getString(R.string.extra_high_score))
+            ?: (getString(R.string.default_high_score).toIntOrNull() ?: 0)
         refreshPlayerInfo()
 
-        // 修改个人信息按钮
+        binding.btnEditInfo.pressFeedback()
+        binding.btnPlayGame.pressFeedback()
         binding.btnEditInfo.setOnClickListener {
-            val intent = Intent(this, EditInfoActivity::class.java).apply {
+            val editIntent = Intent(this, EditInfoActivity::class.java).apply {
                 putExtra(getString(R.string.extra_name), playerName)
                 putExtra(getString(R.string.extra_gender), playerGender)
                 putExtra(getString(R.string.extra_student_id), playerStudentId)
@@ -78,24 +78,37 @@ class MainActivity : AppCompatActivity() {
                 putExtra(getString(R.string.extra_email), playerEmail)
                 putExtra(getString(R.string.extra_hobby), playerHobby)
             }
-            editInfoLauncher.launch(intent)
+            editInfoLauncher.launch(editIntent)
         }
-
-        // 翻牌游戏按钮
         binding.btnPlayGame.setOnClickListener {
-            val intent = Intent(this, MemoryGameActivity::class.java)
-            gameLauncher.launch(intent)
+            val gameIntent = Intent(this, MemoryGameActivity::class.java).apply {
+                putExtra(getString(R.string.extra_high_score), highScore)
+            }
+            gameLauncher.launch(gameIntent)
         }
     }
 
-    /** 刷新界面上的玩家信息显示 */
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putString(getString(R.string.extra_name), playerName)
+        outState.putString(getString(R.string.extra_gender), playerGender)
+        outState.putString(getString(R.string.extra_student_id), playerStudentId)
+        outState.putString(getString(R.string.extra_phone), playerPhone)
+        outState.putString(getString(R.string.extra_email), playerEmail)
+        outState.putString(getString(R.string.extra_hobby), playerHobby)
+        outState.putInt(getString(R.string.extra_high_score), highScore)
+        super.onSaveInstanceState(outState)
+    }
+
     private fun refreshPlayerInfo() {
+        val emptyValue = getString(R.string.profile_not_set)
         binding.tvName.text = playerName
-        binding.tvGender.text = playerGender
+        binding.tvGreeting.text = getString(R.string.welcome_player, playerName)
+        binding.tvMonogram.text = playerName.takeLast(1)
+        binding.tvGender.text = playerGender.ifBlank { emptyValue }
         binding.tvStudentId.text = playerStudentId
-        binding.tvPhone.text = playerPhone
-        binding.tvEmail.text = playerEmail
-        binding.tvHobby.text = playerHobby
-        binding.tvHighScore.text = "$highScore 分"
+        binding.tvPhone.text = playerPhone.ifBlank { emptyValue }
+        binding.tvEmail.text = playerEmail.ifBlank { emptyValue }
+        binding.tvHobby.text = playerHobby.ifBlank { emptyValue }
+        binding.tvHighScore.text = getString(R.string.score_value, highScore)
     }
 }

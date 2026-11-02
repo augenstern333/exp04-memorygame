@@ -1,7 +1,5 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Base.Theme.Exp03multiactivity" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your dark theme here. -->
-        <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
-    </style>
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Deliberately use the same accessible blue-and-white palette in system dark mode. -->
+    <style name="Theme.Exp04memorygame" parent="Base.Theme.Exp04memorygame"/>
 </resources>

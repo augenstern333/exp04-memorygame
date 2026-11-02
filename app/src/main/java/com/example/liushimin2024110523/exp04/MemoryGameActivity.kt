@@ -2,185 +2,186 @@ package com.example.liushimin2024110523.exp04
 
 import android.app.Activity
 import android.content.Intent
-import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.widget.Button
 import android.widget.GridLayout
-import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import com.example.liushimin2024110523.exp04.databinding.ActivityMemoryGameBinding
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
-/**
- * 翻牌游戏 Activity —— MVC 模式
- *
- * Model: Card / Deck / CardMatchingGame（参考附件代码实现）
- * View:  GridLayout 中的 Button 扑克牌 + 底部得分栏
- * Controller: MemoryGameActivity（接收点击、调用Model、同步View）
- */
+/** Controller: the model owns matching and scoring; the views only draw its current state. */
 class MemoryGameActivity : AppCompatActivity() {
-
     private lateinit var binding: ActivityMemoryGameBinding
-
-    // Model 层：游戏核心逻辑（来自附件参考代码）
     private lateinit var game: CardMatchingGame
-    private val cardCount = 16  // 16张牌，4列4行
-
     private val handler = Handler(Looper.getMainLooper())
-    private var isProcessing = false  // 配对动画期间锁定
+    private var attempts = 0
+    private var bestScore = 0
+    private var feedback = R.string.game_ready
+    private var resultShown = false
+    private var resultDialog: androidx.appcompat.app.AlertDialog? = null
+    private val hideMismatch = Runnable {
+        game.dismissMismatch()
+        feedback = R.string.game_ready
+        render()
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMemoryGameBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        configureSystemBars(binding.root)
+        bestScore = savedInstanceState?.getInt(getString(R.string.state_best))
+            ?: intent.getIntExtra(getString(R.string.extra_high_score), 0)
+        @Suppress("DEPRECATION")
+        val restoredGame = savedInstanceState?.getSerializable(getString(R.string.state_game)) as? CardMatchingGame
+        if (restoredGame == null) {
+            game = CardMatchingGame(CARD_COUNT)
+        } else {
+            game = restoredGame
+            attempts = savedInstanceState?.getInt(getString(R.string.state_attempts)) ?: 0
+            feedback = savedInstanceState?.getInt(getString(R.string.state_feedback), R.string.game_ready) ?: R.string.game_ready
+            resultShown = savedInstanceState?.getBoolean(getString(R.string.state_result_shown)) ?: false
+        }
+        buildCards()
+        render(animateChanges = false)
+        updateResult()
+        if (game.hasPendingMismatch) handler.postDelayed(hideMismatch, MISMATCH_PREVIEW_MS)
+        if (game.isComplete && resultShown) binding.root.post { showResult() }
 
-        startNewGame()
-
-        // 重置游戏按钮
+        binding.btnRestart.pressFeedback()
+        binding.btnExit.pressFeedback()
+        binding.btnBack.pressFeedback()
         binding.btnRestart.setOnClickListener {
-            startNewGame()
+            val hasProgress = attempts > 0 || (0 until game.cardCount).any { game.cardAtIndex(it).isChosen }
+            if (hasProgress && !game.isComplete) {
+                MaterialAlertDialogBuilder(this)
+                    .setTitle(R.string.restart_title)
+                    .setMessage(R.string.restart_message)
+                    .setNegativeButton(R.string.keep_playing, null)
+                    .setPositiveButton(R.string.restart_confirm) { _, _ -> startNewGame() }
+                    .show()
+            } else startNewGame()
         }
-
-        // 退出按钮
-        binding.btnExit.setOnClickListener {
-            finish()
+        binding.btnExit.setOnClickListener { finishGame() }
+        binding.btnBack.setOnClickListener { finishGame() }
+        binding.btnRules.setOnClickListener {
+            MaterialAlertDialogBuilder(this).setTitle(R.string.game_rules_title)
+                .setMessage(R.string.game_rules_message).setPositiveButton(R.string.got_it, null).show()
         }
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() = finishGame()
+        })
     }
 
-    /** 开始一局新游戏 */
     private fun startNewGame() {
-        game = CardMatchingGame(cardCount)
-        isProcessing = false
-        buildCardViews()
-        updateScoreDisplay()
+        handler.removeCallbacksAndMessages(null)
+        resultDialog?.dismiss()
+        resultDialog = null
+        updateResult()
+        game = CardMatchingGame(CARD_COUNT)
+        attempts = 0
+        resultShown = false
+        feedback = R.string.game_ready
+        buildCards()
+        render(animateChanges = false)
     }
 
-    /** View层：根据Model生成16张扑克牌按钮 */
-    private fun buildCardViews() {
+    private fun buildCards() {
         binding.gridCards.removeAllViews()
-        val margin = dpToPx(6)
-
-        for (i in 0 until cardCount) {
-            val card = game.cardAtIndex(i)
-            val btn = Button(this).apply {
-                text = if (card.isChosen || card.isMatched) card.toString() else "?"
-                textSize = 20f
-                setBackgroundColor(getCardColor(card))
-                setTextColor(getCardTextColor(card))
-                setOnClickListener { onCardClicked(i) }
+        val margin = (4 * resources.displayMetrics.density).toInt()
+        for (index in 0 until game.cardCount) {
+            val cardView = PlayingCardView(this).apply {
+                bind(game.cardAtIndex(index), index, animateChange = false)
+                setOnClickListener { chooseCard(index) }
             }
-
             val params = GridLayout.LayoutParams().apply {
                 width = 0
                 height = 0
-                columnSpec = GridLayout.spec(i % 4, 1, 1f)
-                rowSpec = GridLayout.spec(i / 4, 1, 1f)
-                this.setMargins(margin, margin, margin, margin)
+                columnSpec = GridLayout.spec(index % 4, 1, 1f)
+                rowSpec = GridLayout.spec(index / 4, 1, 1f)
+                setMargins(margin, margin, margin, margin)
             }
-            binding.gridCards.addView(btn, params)
+            binding.gridCards.addView(cardView, params)
         }
     }
 
-    /** 根据卡片状态返回背景色 */
-    private fun getCardColor(card: Card): Int {
-        return when {
-            card.isMatched -> getColor(R.color.card_matched_color)  // 配对成功=绿色
-            card.isChosen -> getColor(R.color.card_face_color)       // 已翻开=黄色
-            else -> getColor(R.color.card_back_color)               // 背面=蓝色
-        }
-    }
-
-    /** 根据卡片状态返回文字颜色 */
-    private fun getCardTextColor(card: Card): Int {
-        return if (card.isChosen || card.isMatched) Color.BLACK else Color.WHITE
-    }
-
-    /** Controller层：卡片被点击 */
-    private fun onCardClicked(index: Int) {
-        if (isProcessing) return
+    private fun chooseCard(index: Int) {
+        if (game.hasPendingMismatch || game.isComplete || game.cardAtIndex(index).isMatched) return
         val card = game.cardAtIndex(index)
-        if (card.isMatched) return
-
-        // 点击前：先数有几张已翻开但未配对的牌
-        var chosenBefore = 0
-        for (i in 0 until cardCount) {
-            if (game.cardAtIndex(i).isChosen && !game.cardAtIndex(i).isMatched) {
-                chosenBefore++
-            }
+        val wasChosen = card.isChosen
+        val hadSelection = (0 until game.cardCount).any {
+            game.cardAtIndex(it).let { other -> other.isChosen && !other.isMatched }
         }
-
-        // 调用Model处理
         game.chooseCardAtIndex(index)
-
-        // 只有当点击前已经有1张翻开的牌（即这是第二次翻牌），才需要判断是否配对失败
-        val needDelayFlipBack = if (chosenBefore == 1) {
-            var chosenAfter = 0
-            for (i in 0 until cardCount) {
-                if (game.cardAtIndex(i).isChosen && !game.cardAtIndex(i).isMatched) {
-                    chosenAfter++
-                }
-            }
-            chosenAfter == 1
-        } else {
-            false
+        if (hadSelection && !wasChosen) attempts++
+        feedback = when {
+            game.isComplete -> R.string.game_won_status
+            game.hasPendingMismatch -> R.string.game_mismatch
+            card.isMatched -> R.string.game_match
+            wasChosen -> R.string.game_ready
+            else -> R.string.game_pick_second
         }
-
-        // 刷新所有卡片显示
-        refreshAllCards()
-        updateScoreDisplay()
-
-        if (needDelayFlipBack) {
-            isProcessing = true
-            handler.postDelayed({
-                refreshAllCards()
-                isProcessing = false
-            }, 800)
+        updateResult()
+        render()
+        if (game.hasPendingMismatch) {
+            handler.removeCallbacks(hideMismatch)
+            handler.postDelayed(hideMismatch, MISMATCH_PREVIEW_MS)
         }
-
-        // 检查游戏是否结束（全部配对成功）
-        if (isGameWon()) {
-            handler.postDelayed({
-                Toast.makeText(this, "恭喜赢了！得分: ${game.score}", Toast.LENGTH_LONG).show()
-                val resultIntent = Intent().apply {
-                    putExtra(getString(R.string.extra_high_score), game.score)
-                }
-                setResult(Activity.RESULT_OK, resultIntent)
-                finish()
-            }, 500)
-        }
+        if (game.isComplete) showResult()
     }
 
-    /** 检查游戏是否胜利 */
-    private fun isGameWon(): Boolean {
-        for (i in 0 until cardCount) {
-            if (!game.cardAtIndex(i).isMatched) return false
+    private fun render(animateChanges: Boolean = true) {
+        for (index in 0 until game.cardCount) {
+            (binding.gridCards.getChildAt(index) as PlayingCardView)
+                .bind(game.cardAtIndex(index), index, animateChanges)
         }
-        return true
+        binding.tvScore.text = getString(R.string.score_value, game.score)
+        binding.tvPairs.text = getString(R.string.pairs_value, game.matchedPairs, game.cardCount / 2)
+        binding.tvAttempts.text = getString(R.string.attempts_value, attempts)
+        binding.tvFeedback.setText(feedback)
     }
 
-    /** 刷新所有卡片的显示 */
-    private fun refreshAllCards() {
-        for (i in 0 until cardCount) {
-            val btn = binding.gridCards.getChildAt(i) as? Button ?: continue
-            val card = game.cardAtIndex(i)
-            btn.text = if (card.isChosen || card.isMatched) card.toString() else "?"
-            btn.setBackgroundColor(getCardColor(card))
-            btn.setTextColor(getCardTextColor(card))
-        }
+    private fun updateResult() {
+        bestScore = maxOf(bestScore, game.score)
+        setResult(Activity.RESULT_OK, Intent().putExtra(getString(R.string.extra_high_score), bestScore))
     }
 
-    /** 更新底部分数显示 */
-    private fun updateScoreDisplay() {
-        binding.tvScore.text = getString(R.string.label_score) + game.score
+    private fun showResult() {
+        if (isFinishing || isDestroyed || resultDialog?.isShowing == true) return
+        resultShown = true
+        resultDialog = MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.game_win)
+            .setMessage(getString(R.string.game_result, game.score, bestScore, attempts))
+            .setPositiveButton(R.string.game_again) { _, _ -> startNewGame() }
+            .setNegativeButton(R.string.btn_exit) { _, _ -> finishGame() }
+            .show()
     }
 
-    private fun dpToPx(dp: Int): Int {
-        return (dp * resources.displayMetrics.density).toInt()
+    private fun finishGame() {
+        handler.removeCallbacksAndMessages(null)
+        updateResult()
+        finish()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putSerializable(getString(R.string.state_game), game)
+        outState.putInt(getString(R.string.state_attempts), attempts)
+        outState.putInt(getString(R.string.state_best), bestScore)
+        outState.putInt(getString(R.string.state_feedback), feedback)
+        outState.putBoolean(getString(R.string.state_result_shown), resultShown)
+        super.onSaveInstanceState(outState)
     }
 
     override fun onDestroy() {
-        super.onDestroy()
         handler.removeCallbacksAndMessages(null)
+        resultDialog?.dismiss()
+        super.onDestroy()
+    }
+
+    companion object {
+        private const val CARD_COUNT = 16
+        private const val MISMATCH_PREVIEW_MS = 600L
     }
 }

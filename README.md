@@ -1,48 +1,66 @@
-# exp03-multiactivity
+# 实验四：翻牌游戏应用
 
-Android 移动应用开发 实验三：多 Activity。
+Android 移动应用开发实验，使用 Kotlin、XML 布局、ViewBinding 和 MVC。
+应用标题为“刘胜敏2024110523”，包含三个 Activity。
 
-## 功能
+## 页面与功能
 
-- **① 正向传参**：MainActivity 点第 1 个按钮启动 Activity1，`putExtra` 带参数过去，Activity1 用 `getStringExtra` 读出并显示。
-- **② 返回结果**：MainActivity 点第 2 个按钮启动 Activity2，Activity2 输入内容点“确定”，`setResult` + `finish()` 把内容返回 MainActivity 显示。
-- **③ 隐式拍照**：MainActivity 点第 3 个按钮启动 Activity3，Activity3 用隐式 Intent（`MediaStore.ACTION_IMAGE_CAPTURE`）调起系统相机拍照，拍完在 ImageView 回显缩略图（参考老师附件 PDF，新 API 实现）。
-- **④ StopWatch**：MainActivity 点第 4 个按钮启动 Activity4，实现开始/暂停/重置秒表；用 `onSaveInstanceState` 保存状态，横屏竖屏切换时计时连续不丢。
-- **ViewBinding**：`build.gradle.kts` 已开启 `viewBinding = true`，界面操作全部走自动生成的 Binding 类。
-- **无硬编码字符串**：所有文本（含 Intent 的 key、时间格式串）在 `res/values/strings.xml`，布局用 `@string/`，代码用 `getString(...)`。
-- **APP 标题**：`刘胜敏2024110523`（姓名+学号）。
+- `MainActivity`：显示姓名、性别、学号、电话、邮箱、兴趣和当前最高分，进入编辑页与翻牌游戏。
+- `EditInfoActivity`：编辑资料，性别单选、兴趣多选；保存后通过 Activity Result 返回，取消保留原资料。姓名和学号必填，电话、邮箱填写后检查格式。
+- `MemoryGameActivity`：4 × 4 扑克牌，显示分数和配对进度，支持重开、退出及本局结算。
+- 资料、最高分与牌局通过实例状态保存，屏幕旋转或 Activity 重建后恢复；玩家资料不写入文件，符合实验要求。
+- 三页采用统一的蓝白配色，表单支持滚动和键盘避让。
 
-## 目录结构
+## 配对与评分
 
+模型沿用附件 `reference_model/model` 的 MVC 结构，并按当前需求调整判定和计分：牌面只显示花色，不显示点数；两张牌花色相同即配对成功，每对加 10 分；失败扣 2 分，单次翻牌不扣分。
+
+失败时两张牌保持翻开约 600 毫秒，再一起收起，期间暂停接受新的翻牌操作。每局 16 张牌，四种花色各 4 张，保证剩余牌始终能按花色配对；完成 8 对后结算，可重新开始。
+
+## 代码结构
+
+```text
+app/src/main/java/com/example/liushimin2024110523/exp04/
+  MainActivity.kt             玩家资料与 Activity 结果
+  EditInfoActivity.kt         编辑资料与表单验证
+  MemoryGameActivity.kt       游戏控制器
+  Card.kt / Deck.kt           牌与随机牌堆
+  CardMatchingGame.kt         选择、匹配、评分与牌局状态
+  PlayingCardView.kt          原生绘制花色卡牌和翻牌反馈
+  MemoryArtworkView.kt        首页本地矢量插图
+  UiSupport.kt                系统边距与交互辅助
+app/src/main/res/layout/      三个页面布局
+app/src/main/res/values/      字符串、色彩及主题
+app/src/test/                 游戏模型单元测试
+app/src/androidTest/          Espresso 页面流程测试
 ```
-app/src/main/java/com/example/liushimin2024110523/exp03/
-├── MainActivity.kt   # 主界面：4 个按钮 + 接收 Activity2 返回结果
-├── Activity1.kt      # 正向传参：接收参数并显示
-├── Activity2.kt      # 返回结果：setResult 回传
-├── Activity3.kt      # 隐式拍照：ACTION_IMAGE_CAPTURE
-└── Activity4.kt      # StopWatch：onSaveInstanceState 保存状态
-app/src/main/res/layout/
-├── activity_main.xml
-├── activity1.xml
-├── activity2.xml
-├── activity3.xml
-└── activity4.xml
+
+## 构建与运行
+
+用 Android Studio 打开当前项目目录，安装 Android SDK 37，使用 JDK 17 或更新的兼容版本（推荐 Android Studio 内置 JDK）。项目现有配置为 AGP 9.3.0、Gradle 9.5.0，最低 Android 10 / API 29。
+
+```powershell
+.\gradlew.bat assembleDebug
 ```
 
-## 环境
+APK 位于 `app/build/outputs/apk/debug/app-debug.apk`。可连接开启 USB 调试的手机或启动模拟器后在 Android Studio 运行。
 
-- Android Studio 2026.x
-- AGP 9.3.0 / Gradle 9.5.0
-- minSdk 29 / targetSdk 37 / compileSdk 37
-- Kotlin
+## 测试
 
-## 运行
+本地模型单元测试覆盖花色配对、成功加分和失败扣分、选择状态、已配对牌保护、发牌平衡及牌局恢复。
 
-用 Android Studio 打开本目录，连接 Android 真机（开启 USB 调试）或模拟器，点击 Run。
+```powershell
+.\gradlew.bat testDebugUnitTest
+```
 
-命令行编译：`gradlew.bat assembleDebug`，APK 输出在 `app/build/outputs/apk/debug/`。
+Espresso UI 测试覆盖资料保存与取消、资料和编辑草稿在 Activity 重建后保留、空姓名的字段内错误、翻牌后牌面与分数恢复，以及新局重开与退出。运行 UI 测试前需连接 API 29 以上的设备或模拟器。
 
-## 提交（gitee）
+```powershell
+.\gradlew.bat connectedDebugAndroidTest
+```
 
-1. `git init` 并推送到你在 gitee 上的项目仓库；
-2. 实验报告末尾附上 gitee 地址。
+本次源码验证：应用编译通过，16 项模型单元测试通过，6 项 UI 测试已编译通过。UI 测试尚未在设备上运行，未执行安装。报告目录为 `app/build/reports/tests/` 与 `app/build/reports/androidTests/connected/`。
+
+## 实验提交
+
+将本项目提交到自己的 Gitee 仓库，并在实验报告中附上仓库地址、主要代码说明及最终运行截图。

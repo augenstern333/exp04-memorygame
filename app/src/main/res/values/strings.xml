@@ -1,20 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- APP 标题 = 姓名+学号 -->
     <string name="app_name">刘胜敏2024110523</string>
-
-    <!-- 头像 -->
-    <string name="label_avatar">头像</string>
-    <string name="btn_camera">拍照</string>
-
-    <!-- MainActivity：玩家信息展示 -->
-    <string name="title_player_info">玩家基本信息</string>
-    <string name="label_name">姓名：</string>
-    <string name="label_gender">性别：</string>
-    <string name="label_student_id">学号：</string>
-    <string name="label_phone">电话：</string>
-    <string name="label_email">邮件地址：</string>
-    <string name="label_hobby">爱好：</string>
-    <string name="label_high_score">游戏最高分：</string>
+    <string name="title_player_info">玩家档案</string>
+    <string name="label_name">姓名</string>
+    <string name="label_gender">性别</string>
+    <string name="label_student_id">学号</string>
+    <string name="label_phone">联系电话</string>
+    <string name="label_email">电子邮件</string>
+    <string name="label_hobby">兴趣爱好</string>
+    <string name="label_high_score">个人最高分</string>
     <string name="default_name">刘胜敏</string>
     <string name="default_gender">女</string>
     <string name="default_student_id">2024110523</string>
@@ -22,27 +16,90 @@
     <string name="default_email">liushimin@example.com</string>
     <string name="default_hobby">阅读、游戏</string>
     <string name="default_high_score">0</string>
-
-    <!-- 主界面按钮 -->
-    <string name="btn_edit_info">修改个人信息</string>
-    <string name="btn_play_game">翻牌游戏</string>
-
-    <!-- EditInfoActivity：信息修改 -->
-    <string name="title_edit_info">信息修改</string>
+    <string name="btn_edit_info">编辑资料</string>
+    <string name="btn_play_game">开始翻牌</string>
+    <string name="title_edit_info">编辑资料</string>
     <string name="hint_name">姓名</string>
     <string name="hint_student_id">学号</string>
-    <string name="hint_phone">电话号码</string>
-    <string name="hint_email">电子邮件地址</string>
+    <string name="hint_phone">电话号码（选填）</string>
+    <string name="hint_email">电子邮件（选填）</string>
     <string name="gender_male">男</string>
     <string name="gender_female">女</string>
     <string name="hobby_travel">旅游</string>
     <string name="hobby_reading">阅读</string>
     <string name="hobby_game">游戏</string>
     <string name="hobby_shopping">购物</string>
-    <string name="btn_save">保存</string>
+    <string name="btn_save">保存修改</string>
     <string name="btn_cancel">取消</string>
+    <string name="btn_back">返回</string>
+    <string name="info_saved">资料已更新</string>
+    <string name="welcome_player">%1$s，准备好了吗？</string>
+    <string name="score_value">%1$d</string>
+    <string name="profile_not_set">未填写</string>
+    <string name="hobby_separator">、</string>
+    <string name="error_name_required">请填写姓名</string>
+    <string name="error_student_id_required">请填写学号</string>
+    <string name="error_phone_invalid">请填写有效的电话号码</string>
+    <string name="error_email_invalid">请检查电子邮件格式</string>
+    <string name="home_eyebrow">记忆练习 · MEMORY</string>
+    <string name="home_title">翻开一张，
+记住更多。</string>
+    <string name="home_description">找到相同花色，让记忆多赢一分。</string>
+    <string name="best_caption">每一次专注，都值得刷新纪录</string>
+    <string name="score_unit">分</string>
+    <string name="profile_caption">你的游戏名片</string>
+    <string name="home_footer">16 张牌 · 8 次配对 · 随时再来一局</string>
+    <string name="profile_intro">让每一次好成绩，都有你的名字。</string>
+    <string name="form_required_note">姓名和学号为必填项，其余信息可选填。</string>
+    <string name="form_hobby_note">可以选择多个你喜欢的选项</string>
+    <string name="form_section_basic">基本信息</string>
+    <string name="form_section_more">关于你</string>
+    <string name="game_eyebrow">专注这一局</string>
+    <string name="title_memory_game">翻牌游戏</string>
+    <string name="game_subtitle">只看花色，找到它的另一半。</string>
+    <string name="label_score">本局得分</string>
+    <string name="label_pairs">已配对</string>
+    <string name="pairs_value">%1$d / %2$d</string>
+    <string name="attempts_value">尝试 %1$d 次</string>
+    <string name="board_label">翻开相同花色的两张牌</string>
+    <string name="game_rule">配对 +10 分 · 翻错 −2 分 · 翻牌不扣分</string>
+    <string name="btn_restart">重新洗牌</string>
+    <string name="btn_exit">返回首页</string>
+    <string name="game_ready">先翻开一张，记住它的花色</string>
+    <string name="game_pick_second">再翻一张，找找相同花色</string>
+    <string name="game_match">配对成功，+10 分</string>
+    <string name="game_mismatch">花色不同，−2 分。记住这两张牌</string>
+    <string name="game_won_status">全部配对完成，做得不错！</string>
+    <string name="game_no_pairs">本局已无可配对的牌</string>
+    <string name="game_win">全部配对完成</string>
+    <string name="game_result">本局得分 %1$d 分
+个人最高 %2$d 分
+一共尝试 %3$d 次</string>
+    <string name="game_again">再来一局</string>
+    <string name="restart_title">重新开始这一局？</string>
+    <string name="restart_message">将重新洗牌，本局已获得的最高分会保留。</string>
+    <string name="restart_confirm">重新开始</string>
+    <string name="keep_playing">继续游戏</string>
+    <string name="card_hidden_description">第 %1$d 张牌，未翻开</string>
+    <string name="card_open_description">第 %1$d 张牌，%2$s，已翻开</string>
+    <string name="card_matched_description">第 %1$d 张牌，%2$s，已配对</string>
+    <string name="suit_hearts">红心</string>
+    <string name="suit_diamonds">方块</string>
+    <string name="suit_spades">黑桃</string>
+    <string name="suit_clubs">梅花</string>
+    <string name="game_rules_title">玩法与计分</string>
+    <string name="game_rules_message">每局 16 张牌，每种花色各 4 张。
 
-    <!-- Intent extra keys -->
+只有花色相同的两张牌才能配对，不看数字。
+
+配对成功加 10 分，配对失败扣 2 分，单次翻牌不扣分。翻错后两张牌会短暂展示，再一起收起。</string>
+    <string name="game_rules_button">查看玩法</string>
+    <string name="got_it">知道了</string>
+    <string name="state_game">state_game</string>
+    <string name="state_attempts">state_attempts</string>
+    <string name="state_best">state_best</string>
+    <string name="state_feedback">state_feedback</string>
+    <string name="state_result_shown">state_result_shown</string>
     <string name="extra_name">extra_name</string>
     <string name="extra_gender">extra_gender</string>
     <string name="extra_student_id">extra_student_id</string>
@@ -50,14 +107,4 @@
     <string name="extra_email">extra_email</string>
     <string name="extra_hobby">extra_hobby</string>
     <string name="extra_high_score">extra_high_score</string>
-
-    <!-- MemoryGameActivity：翻牌游戏 -->
-    <string name="title_memory_game">翻牌游戏</string>
-    <string name="label_score">得分：</string>
-    <string name="btn_restart">重置游戏</string>
-    <string name="btn_exit">退出</string>
-    <string name="game_win">恭喜你赢了！最终得分 %1$d 分</string>
-
-    <!-- Toast 提示 -->
-    <string name="info_saved">信息已保存</string>
 </resources>
