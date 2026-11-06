@@ -5,7 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.widget.GridLayout
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import com.example.liushimin2024110523.exp04.databinding.ActivityMemoryGameBinding
@@ -16,6 +16,7 @@ class MemoryGameActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMemoryGameBinding
     private lateinit var game: CardMatchingGame
     private val handler = Handler(Looper.getMainLooper())
+    private lateinit var cardAdapter: CardAdapter
     private var attempts = 0
     private var bestScore = 0
     private var feedback = R.string.game_ready
@@ -80,7 +81,7 @@ class MemoryGameActivity : AppCompatActivity() {
         resultDialog?.dismiss()
         resultDialog = null
         updateResult()
-        game = CardMatchingGame(CARD_COUNT)
+        game.reset()
         attempts = 0
         resultShown = false
         feedback = R.string.game_ready
@@ -89,38 +90,27 @@ class MemoryGameActivity : AppCompatActivity() {
     }
 
     private fun buildCards() {
-        binding.gridCards.removeAllViews()
-        val margin = (4 * resources.displayMetrics.density).toInt()
-        for (index in 0 until game.cardCount) {
-            val cardView = PlayingCardView(this).apply {
-                bind(game.cardAtIndex(index), index, animateChange = false)
-                setOnClickListener { chooseCard(index) }
-            }
-            val params = GridLayout.LayoutParams().apply {
-                width = 0
-                height = 0
-                columnSpec = GridLayout.spec(index % 4, 1, 1f)
-                rowSpec = GridLayout.spec(index / 4, 1, 1f)
-                setMargins(margin, margin, margin, margin)
-            }
-            binding.gridCards.addView(cardView, params)
-        }
+        val columns = resources.getInteger(R.integer.board_columns)
+        binding.gridCards.layoutManager = GridLayoutManager(this, columns)
+        binding.gridCards.isNestedScrollingEnabled = false
+        binding.gridCards.itemAnimator = null
+        cardAdapter = CardAdapter(game, ::chooseCard)
+        binding.gridCards.adapter = cardAdapter
     }
 
     private fun chooseCard(index: Int) {
         if (game.hasPendingMismatch || game.isComplete || game.cardAtIndex(index).isMatched) return
         val card = game.cardAtIndex(index)
         val wasChosen = card.isChosen
-        val hadSelection = (0 until game.cardCount).any {
-            game.cardAtIndex(it).let { other -> other.isChosen && !other.isMatched }
-        }
+        val selectionCount = game.selectedCount
         game.chooseCardAtIndex(index)
-        if (hadSelection && !wasChosen) attempts++
+        if (selectionCount == game.matchSize - 1 && !wasChosen) attempts++
         feedback = when {
             game.isComplete -> R.string.game_won_status
             game.hasPendingMismatch -> R.string.game_mismatch
             card.isMatched -> R.string.game_match
-            wasChosen -> R.string.game_ready
+            wasChosen && game.selectedCount == 0 -> R.string.game_ready
+            game.selectedCount == 2 -> R.string.game_pick_third
             else -> R.string.game_pick_second
         }
         updateResult()
@@ -133,12 +123,10 @@ class MemoryGameActivity : AppCompatActivity() {
     }
 
     private fun render(animateChanges: Boolean = true) {
-        for (index in 0 until game.cardCount) {
-            (binding.gridCards.getChildAt(index) as PlayingCardView)
-                .bind(game.cardAtIndex(index), index, animateChanges)
-        }
+        if (animateChanges) cardAdapter.refreshCards()
+        else cardAdapter.notifyDataSetChanged()
         binding.tvScore.text = getString(R.string.score_value, game.score)
-        binding.tvPairs.text = getString(R.string.pairs_value, game.matchedPairs, game.cardCount / 2)
+        binding.tvPairs.text = getString(R.string.pairs_value, game.matchedGroups, game.cardCount / game.matchSize)
         binding.tvAttempts.text = getString(R.string.attempts_value, attempts)
         binding.tvFeedback.setText(feedback)
     }
@@ -181,7 +169,7 @@ class MemoryGameActivity : AppCompatActivity() {
     }
 
     companion object {
-        private const val CARD_COUNT = 16
+        private const val CARD_COUNT = 24
         private const val MISMATCH_PREVIEW_MS = 600L
     }
 }

@@ -3,6 +3,9 @@ package com.example.liushimin2024110523.exp04
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -49,6 +52,7 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         configureSystemBars(binding.root)
+        setSupportActionBar(binding.homeToolbar)
 
         // Keep player information in the current task, including Activity recreation.
         playerName = savedInstanceState?.getString(getString(R.string.extra_name))
@@ -86,6 +90,22 @@ class MainActivity : AppCompatActivity() {
             }
             gameLauncher.launch(gameIntent)
         }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.main_menu, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == R.id.action_about) {
+            MaterialAlertDialogBuilder(this)
+                .setTitle(R.string.about_title)
+                .setMessage(R.string.about_message)
+                .setPositiveButton(R.string.got_it, null).show()
+            return true
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

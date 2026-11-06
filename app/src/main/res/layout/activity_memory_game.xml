@@ -117,21 +117,13 @@
                         android:includeFontPadding="false" />
                 </LinearLayout>
             </LinearLayout>
-            <androidx.constraintlayout.widget.ConstraintLayout android:layout_width="match_parent" android:layout_height="wrap_content">
-                <GridLayout
-                    android:id="@+id/grid_cards"
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    android:columnCount="4"
-                    android:rowCount="4"
-                    android:alignmentMode="alignMargins"
-                    android:useDefaultMargins="false"
-                    app:layout_constraintDimensionRatio="4:4.65"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    android:contentDescription="@string/board_label" />
-            </androidx.constraintlayout.widget.ConstraintLayout>
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/grid_cards"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false"
+                android:overScrollMode="never"
+                android:contentDescription="@string/board_label" />
             <TextView
                 android:id="@+id/tv_feedback"
                 android:layout_width="match_parent"

@@ -19,7 +19,7 @@ class CardMatchingGameTest {
         assertEquals(1, card.match(arrayOf(Card("♥", "A"))))
         assertEquals(0, card.match(arrayOf(Card("♠", "A"))))
         assertEquals(0, card.match(emptyArray()))
-        assertEquals(0, card.match(arrayOf(Card("♥", "2"), Card("♥", "3"))))
+        assertEquals(1, card.match(arrayOf(Card("♥", "2"), Card("♥", "3"))))
     }
 
     @Test
@@ -32,7 +32,7 @@ class CardMatchingGameTest {
 
     @Test
     fun choosingAndCancellingACardDoNotChangeScore() {
-        val game = CardMatchingGame(listOf(Card("♥", "A"), Card("♠", "K")))
+        val game = pairGame(listOf(Card("♥", "A"), Card("♠", "K")))
         game.chooseCardAtIndex(0)
         assertEquals(0, game.score)
         assertTrue(game.cardAtIndex(0).isChosen)
@@ -45,7 +45,7 @@ class CardMatchingGameTest {
 
     @Test
     fun matchingSuitImmediatelyAwardsTenPoints() {
-        val game = CardMatchingGame(listOf(Card("♥", "A"), Card("♥", "K")))
+        val game = pairGame(listOf(Card("♥", "A"), Card("♥", "K")))
         game.chooseCardAtIndex(0)
         game.chooseCardAtIndex(1)
         assertEquals(10, game.score)
@@ -59,7 +59,7 @@ class CardMatchingGameTest {
 
     @Test
     fun sameRankWithDifferentSuitsIsAMismatch() {
-        val game = CardMatchingGame(listOf(Card("♥", "A"), Card("♠", "A")))
+        val game = pairGame(listOf(Card("♥", "A"), Card("♠", "A")))
         game.chooseCardAtIndex(0)
         game.chooseCardAtIndex(1)
         assertEquals(-2, game.score)
@@ -71,7 +71,7 @@ class CardMatchingGameTest {
 
     @Test
     fun pendingMismatchRejectsThirdCardAndRepeatedClicks() {
-        val game = CardMatchingGame(listOf(Card("♥", "A"), Card("♠", "K"), Card("♠", "Q")))
+        val game = pairGame(listOf(Card("♥", "A"), Card("♠", "K"), Card("♠", "Q")))
         game.chooseCardAtIndex(0)
         game.chooseCardAtIndex(1)
         game.chooseCardAtIndex(2)
@@ -86,7 +86,7 @@ class CardMatchingGameTest {
 
     @Test
     fun dismissMismatchHidesBothCardsWithoutAnotherPenalty() {
-        val game = CardMatchingGame(listOf(Card("♥", "A"), Card("♠", "K"), Card("♠", "Q")))
+        val game = pairGame(listOf(Card("♥", "A"), Card("♠", "K"), Card("♠", "Q")))
         game.chooseCardAtIndex(0)
         game.chooseCardAtIndex(1)
         game.dismissMismatch()
@@ -104,7 +104,7 @@ class CardMatchingGameTest {
 
     @Test
     fun dismissMismatchDoesNotHideAnOrdinarySingleSelection() {
-        val game = CardMatchingGame(listOf(Card("♥", "A"), Card("♠", "K")))
+        val game = pairGame(listOf(Card("♥", "A"), Card("♠", "K")))
         game.chooseCardAtIndex(0)
         game.dismissMismatch()
         assertTrue(game.cardAtIndex(0).isChosen)
@@ -113,7 +113,7 @@ class CardMatchingGameTest {
 
     @Test
     fun choosingMatchedCardHasNoEffect() {
-        val game = CardMatchingGame(listOf(Card("♥", "A"), Card("♥", "K")))
+        val game = pairGame(listOf(Card("♥", "A"), Card("♥", "K")))
         game.chooseCardAtIndex(0)
         game.chooseCardAtIndex(1)
         game.chooseCardAtIndex(0)
@@ -126,7 +126,7 @@ class CardMatchingGameTest {
 
     @Test
     fun availableMatchIgnoresMatchedCardsAndDetectsStrandedCards() {
-        val game = CardMatchingGame(listOf(
+        val game = pairGame(listOf(
             Card("♥", "A"), Card("♥", "K"), Card("♦", "2"), Card("♣", "3")
         ))
         assertTrue(game.hasAvailableMatch)
@@ -142,7 +142,7 @@ class CardMatchingGameTest {
     @Test
     fun constructorCopiesTheProvidedCards() {
         val original = Card("♥", "A")
-        val game = CardMatchingGame(listOf(original))
+        val game = pairGame(listOf(original))
         assertNotSame(original, game.cardAtIndex(0))
         original.isMatched = true
         assertFalse(game.cardAtIndex(0).isMatched)
@@ -150,7 +150,7 @@ class CardMatchingGameTest {
 
     @Test
     fun sixteenCardDealContainsFourOfEachSuitAndCanBeCompleted() {
-        val game = CardMatchingGame(16)
+        val game = pairGame(16)
         val indicesBySuit = (0 until game.cardCount).groupBy { game.cardAtIndex(it).suit }
         assertEquals(16, game.cardCount)
         assertEquals(16, (0 until game.cardCount).map { game.cardAtIndex(it).toString() }.toSet().size)
@@ -170,7 +170,7 @@ class CardMatchingGameTest {
     @Test
     fun evenDealAlwaysKeepsSuitCountsEven() {
         for (count in 0..48 step 2) {
-            val game = CardMatchingGame(count)
+            val game = pairGame(count)
             assertEquals(count, game.cardCount)
             val suits = (0 until count).groupingBy { game.cardAtIndex(it).suit }.eachCount()
             assertTrue(suits.values.all { it % 2 == 0 })
@@ -179,12 +179,12 @@ class CardMatchingGameTest {
 
     @Test(expected = IllegalArgumentException::class)
     fun oddCardCountIsRejected() {
-        CardMatchingGame(15)
+        pairGame(15)
     }
 
     @Test
     fun serializationRestoresPendingMismatchAndCanContinueAfterDismissal() {
-        val game = CardMatchingGame(listOf(Card("♥", "A"), Card("♠", "K"), Card("♠", "Q")))
+        val game = pairGame(listOf(Card("♥", "A"), Card("♠", "K"), Card("♠", "Q")))
         game.chooseCardAtIndex(0)
         game.chooseCardAtIndex(1)
         val restored = roundTrip(game)
@@ -204,7 +204,7 @@ class CardMatchingGameTest {
 
     @Test
     fun serializationRestoresCardOrderScoreMatchedAndSingleChosenStates() {
-        val game = CardMatchingGame(listOf(
+        val game = pairGame(listOf(
             Card("♥", "A"), Card("♥", "K"), Card("♦", "2"), Card("♣", "3")
         ))
         game.chooseCardAtIndex(0)
@@ -228,6 +228,9 @@ class CardMatchingGameTest {
         assertFalse(restored.cardAtIndex(2).isChosen)
         assertTrue(game.cardAtIndex(2).isChosen)
     }
+
+    private fun pairGame(cards: List<Card>) = CardMatchingGame(cards, 2)
+    private fun pairGame(count: Int) = CardMatchingGame(count, 2)
 
     private fun roundTrip(game: CardMatchingGame): CardMatchingGame {
         val bytes = ByteArrayOutputStream().also { stream ->

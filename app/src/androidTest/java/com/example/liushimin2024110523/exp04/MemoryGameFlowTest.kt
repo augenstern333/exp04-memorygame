@@ -3,7 +3,7 @@ package com.example.liushimin2024110523.exp04
 import android.content.Intent
 import android.graphics.Rect
 import android.view.View
-import android.widget.GridLayout
+import androidx.recyclerview.widget.RecyclerView
 import android.widget.TextView
 import androidx.test.core.app.ActivityScenario
 import androidx.test.espresso.Espresso.onView
@@ -87,7 +87,7 @@ class MemoryGameFlowTest {
             var openDescription = ""
             onView(withId(R.id.grid_cards)).check { view, noViewFound ->
                 if (noViewFound != null) throw noViewFound
-                hiddenDescription = (view as GridLayout).getChildAt(0).contentDescription.toString()
+                hiddenDescription = (view as RecyclerView).getChildAt(0).contentDescription.toString()
             }
             onView(withId(R.id.tv_score)).check { view, noViewFound ->
                 if (noViewFound != null) throw noViewFound
@@ -101,7 +101,7 @@ class MemoryGameFlowTest {
             assertEquals(startingScore, flippedScore)
             onView(withId(R.id.grid_cards)).check { view, noViewFound ->
                 if (noViewFound != null) throw noViewFound
-                openDescription = (view as GridLayout).getChildAt(0).contentDescription.toString()
+                openDescription = (view as RecyclerView).getChildAt(0).contentDescription.toString()
             }
             assertNotEquals(hiddenDescription, openDescription)
 
@@ -109,8 +109,8 @@ class MemoryGameFlowTest {
             onView(withId(R.id.tv_score)).check(matches(withText(flippedScore)))
             onView(withId(R.id.grid_cards)).check { view, noViewFound ->
                 if (noViewFound != null) throw noViewFound
-                val grid = view as GridLayout
-                assertEquals(16, grid.childCount)
+                val grid = view as RecyclerView
+                assertEquals(24, grid.adapter!!.itemCount)
                 assertEquals(openDescription, grid.getChildAt(0).contentDescription.toString())
             }
         }
@@ -123,11 +123,22 @@ class MemoryGameFlowTest {
             onView(withId(R.id.btn_restart)).perform(reveal(), click())
             onView(withId(R.id.grid_cards)).check { view, noViewFound ->
                 if (noViewFound != null) throw noViewFound
-                assertEquals(16, (view as GridLayout).childCount)
+                assertEquals(24, (view as RecyclerView).adapter!!.itemCount)
             }
             onView(withId(R.id.btn_exit)).perform(reveal(), click())
             val context = InstrumentationRegistry.getInstrumentation().targetContext
             onView(withId(R.id.tv_name)).check(matches(withText(context.getString(R.string.default_name))))
+        }
+    }
+
+    @Test
+    fun homeAboutMenuShowsExperimentDetails() {
+        ActivityScenario.launch(MainActivity::class.java).use {
+            val context = InstrumentationRegistry.getInstrumentation().targetContext
+            androidx.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu(context)
+            onView(withText(R.string.about_title)).perform(click())
+            onView(withText(R.string.about_message)).check(matches(withText(R.string.about_message)))
+            onView(withText(R.string.got_it)).perform(click())
         }
     }
 
@@ -142,11 +153,11 @@ class MemoryGameFlowTest {
     }
 
     private fun clickFirstCard() = object : ViewAction {
-        override fun getConstraints(): Matcher<View> = isAssignableFrom(GridLayout::class.java)
+        override fun getConstraints(): Matcher<View> = isAssignableFrom(RecyclerView::class.java)
         override fun getDescription() = "choose the first card in the game board"
         override fun perform(uiController: UiController, view: View) {
-            val grid = view as GridLayout
-            assertEquals(16, grid.childCount)
+            val grid = view as RecyclerView
+            assertEquals(24, grid.adapter!!.itemCount)
             grid.getChildAt(0).performClick()
             uiController.loopMainThreadUntilIdle()
         }

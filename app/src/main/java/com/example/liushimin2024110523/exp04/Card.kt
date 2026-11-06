@@ -16,7 +16,7 @@ class Card(
 
     override fun toString(): String = suit + rank
 
-    /** Cards match by suit; rank remains available for deck identity only. */
+    /** Accept one or two other cards of the same suit; rank identifies the dealt card. */
     fun match(otherCards: Array<Card>): Int =
-        if (otherCards.size == 1 && otherCards[0].suit == suit) 1 else 0
+        if (otherCards.size in 1..2 && otherCards.all { it.suit == suit }) 1 else 0
 }
