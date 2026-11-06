@@ -48,7 +48,7 @@
     <string name="best_caption">每一次专注，都值得刷新纪录</string>
     <string name="score_unit">分</string>
     <string name="profile_caption">你的游戏名片</string>
-    <string name="home_footer">16 张牌 · 8 次配对 · 随时再来一局</string>
+    <string name="home_footer">24 张牌 · 8 组配对 · 随时再来一局</string>
     <string name="profile_intro">让每一次好成绩，都有你的名字。</string>
     <string name="form_required_note">姓名和学号为必填项，其余信息可选填。</string>
     <string name="form_hobby_note">可以选择多个你喜欢的选项</string>
@@ -56,19 +56,19 @@
     <string name="form_section_more">关于你</string>
     <string name="game_eyebrow">专注这一局</string>
     <string name="title_memory_game">翻牌游戏</string>
-    <string name="game_subtitle">只看花色，找到它的另一半。</string>
+    <string name="game_subtitle">记住花色，找齐同花三张。</string>
     <string name="label_score">本局得分</string>
     <string name="label_pairs">已配对</string>
     <string name="pairs_value">%1$d / %2$d</string>
     <string name="attempts_value">尝试 %1$d 次</string>
-    <string name="board_label">翻开相同花色的两张牌</string>
-    <string name="game_rule">配对 +10 分 · 翻错 −2 分 · 翻牌不扣分</string>
+    <string name="board_label">24 张牌，翻开相同花色的三张牌</string>
+    <string name="game_rule">三张同花 +10 分 · 翻错 −2 分 · 翻牌不扣分</string>
     <string name="btn_restart">重新洗牌</string>
     <string name="btn_exit">返回首页</string>
     <string name="game_ready">先翻开一张，记住它的花色</string>
-    <string name="game_pick_second">再翻一张，找找相同花色</string>
+    <string name="game_pick_second">已翻开 1 张，再找两张相同花色</string>
     <string name="game_match">配对成功，+10 分</string>
-    <string name="game_mismatch">花色不同，−2 分。记住这两张牌</string>
+    <string name="game_mismatch">三张花色不同，−2 分。记住它们的位置</string>
     <string name="game_won_status">全部配对完成，做得不错！</string>
     <string name="game_no_pairs">本局已无可配对的牌</string>
     <string name="game_win">全部配对完成</string>
@@ -88,11 +88,7 @@
     <string name="suit_spades">黑桃</string>
     <string name="suit_clubs">梅花</string>
     <string name="game_rules_title">玩法与计分</string>
-    <string name="game_rules_message">每局 16 张牌，每种花色各 4 张。
-
-只有花色相同的两张牌才能配对，不看数字。
-
-配对成功加 10 分，配对失败扣 2 分，单次翻牌不扣分。翻错后两张牌会短暂展示，再一起收起。</string>
+    <string name="game_rules_message">每局 24 张牌，四种花色各 6 张。\n依次翻开 3 张牌：花色全部相同即配成一组，加 10 分；否则扣 2 分，短暂展示后一起盖回。\n选满 3 张前可再次点击已翻开的牌取消选择。已配对牌不可再选。完成 8 组后结算。\n重新开始会洗牌并清零本局，个人最高分保留。横屏 6 列，竖屏 4 列，旋转后保留牌局。</string>
     <string name="game_rules_button">查看玩法</string>
     <string name="got_it">知道了</string>
     <string name="state_game">state_game</string>
@@ -107,4 +103,7 @@
     <string name="extra_email">extra_email</string>
     <string name="extra_hobby">extra_hobby</string>
     <string name="extra_high_score">extra_high_score</string>
+    <string name="game_pick_third">已翻开 2 张，继续寻找第三张同花色</string>
+    <string name="about_title">关于</string>
+    <string name="about_message">刘胜敏2024110523\n实验五 · RecyclerView 翻牌游戏\n\n基于实验四，使用 MVC、RecyclerView 和自定义卡牌视图实现。每局 24 张牌，三张同花色配为一组。支持横竖屏切换、重新开始和分数回传。</string>
 </resources>

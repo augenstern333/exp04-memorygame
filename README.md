@@ -1,66 +1,39 @@
-# 实验四：翻牌游戏应用
+# 实验五：RecyclerView 翻牌游戏
 
-Android 移动应用开发实验，使用 Kotlin、XML 布局、ViewBinding 和 MVC。
-应用标题为“刘胜敏2024110523”，包含三个 Activity。
+基于实验四，保留玩家档案、编辑资料与最高分回传。应用标题：刘胜敏2024110523。
 
-## 页面与功能
+## 本次功能
 
-- `MainActivity`：显示姓名、性别、学号、电话、邮箱、兴趣和当前最高分，进入编辑页与翻牌游戏。
-- `EditInfoActivity`：编辑资料，性别单选、兴趣多选；保存后通过 Activity Result 返回，取消保留原资料。姓名和学号必填，电话、邮箱填写后检查格式。
-- `MemoryGameActivity`：4 × 4 扑克牌，显示分数和配对进度，支持重开、退出及本局结算。
-- 资料、最高分与牌局通过实例状态保存，屏幕旋转或 Activity 重建后恢复；玩家资料不写入文件，符合实验要求。
-- 三页采用统一的蓝白配色，表单支持滚动和键盘避让。
+- MainActivity 使用 Toolbar 菜单，点击“关于”弹出对话框。
+- RecyclerView + GridLayoutManager + CardAdapter/ViewHolder 显示 24 张牌。
+- 竖屏 4 列 × 6 行，横屏 6 列 × 4 行；页面可滚动，旋转后保留牌序、选牌、分数和尝试次数。
+- MVC：Card/CardMatchingGame 为模型，PlayingCardView 和 XML 为视图，Activity 为控制器；Adapter 回调交给控制器处理。
+- 四种花色各 6 张，依次翻 3 张。三张同花色加 10 分，否则扣 2 分，600ms 后统一盖回，等待期间禁止继续翻牌。前两张可再次点击取消选择。已配对牌不可再选。
+- 完成 8 组后结算；重新开始调用模型 reset() 重新发牌，清空本局状态，保留最高分。
+- 用户可见文字使用 strings.xml；布局列数使用 values/integers.xml 和 values-land/integers.xml。
 
-## 配对与评分
+## 构建与验证
 
-模型沿用附件 `reference_model/model` 的 MVC 结构，并按当前需求调整判定和计分：牌面只显示花色，不显示点数；两张牌花色相同即配对成功，每对加 10 分；失败扣 2 分，单次翻牌不扣分。
-
-失败时两张牌保持翻开约 600 毫秒，再一起收起，期间暂停接受新的翻牌操作。每局 16 张牌，四种花色各 4 张，保证剩余牌始终能按花色配对；完成 8 对后结算，可重新开始。
-
-## 代码结构
-
-```text
-app/src/main/java/com/example/liushimin2024110523/exp04/
-  MainActivity.kt             玩家资料与 Activity 结果
-  EditInfoActivity.kt         编辑资料与表单验证
-  MemoryGameActivity.kt       游戏控制器
-  Card.kt / Deck.kt           牌与随机牌堆
-  CardMatchingGame.kt         选择、匹配、评分与牌局状态
-  PlayingCardView.kt          原生绘制花色卡牌和翻牌反馈
-  MemoryArtworkView.kt        首页本地矢量插图
-  UiSupport.kt                系统边距与交互辅助
-app/src/main/res/layout/      三个页面布局
-app/src/main/res/values/      字符串、色彩及主题
-app/src/test/                 游戏模型单元测试
-app/src/androidTest/          Espresso 页面流程测试
-```
-
-## 构建与运行
-
-用 Android Studio 打开当前项目目录，安装 Android SDK 37，使用 JDK 17 或更新的兼容版本（推荐 Android Studio 内置 JDK）。项目现有配置为 AGP 9.3.0、Gradle 9.5.0，最低 Android 10 / API 29。
+Android Studio 打开本目录；SDK 37、兼容 JDK（当前使用 JDK 24），Gradle 9.5 / AGP 9.3。
 
 ```powershell
-.\gradlew.bat assembleDebug
-```
-
-APK 位于 `app/build/outputs/apk/debug/app-debug.apk`。可连接开启 USB 调试的手机或启动模拟器后在 Android Studio 运行。
-
-## 测试
-
-本地模型单元测试覆盖花色配对、成功加分和失败扣分、选择状态、已配对牌保护、发牌平衡及牌局恢复。
-
-```powershell
-.\gradlew.bat testDebugUnitTest
-```
-
-Espresso UI 测试覆盖资料保存与取消、资料和编辑草稿在 Activity 重建后保留、空姓名的字段内错误、翻牌后牌面与分数恢复，以及新局重开与退出。运行 UI 测试前需连接 API 29 以上的设备或模拟器。
-
-```powershell
+.\gradlew.bat assembleDebug testDebugUnitTest assembleDebugAndroidTest
+# 连接设备后执行界面测试
 .\gradlew.bat connectedDebugAndroidTest
 ```
 
-本次源码验证：应用编译通过，16 项模型单元测试通过，6 项 UI 测试已编译通过。UI 测试尚未在设备上运行，未执行安装。报告目录为 `app/build/reports/tests/` 与 `app/build/reports/androidTests/connected/`。
+安装包：app/build/outputs/apk/debug/app-debug.apk。
 
-## 实验提交
+单元测试涵盖三牌匹配、失败锁定、取消选牌、完整通关、reset、序列化恢复，并保留双牌模式回归测试。界面测试覆盖资料保存/取消、草稿与牌局恢复、重新开始、退出以及关于菜单。
 
-将本项目提交到自己的 Gitee 仓库，并在实验报告中附上仓库地址、主要代码说明及最终运行截图。
+## 分支与目录
+
+实验四保留在 main，本次实验五在 Dev 分支。沿用实验四的同一个 GitHub 仓库：https://github.com/augenstern333/exp04-memorygame 。老师课堂已明确允许使用 GitHub。
+
+本地实验四目录为 D:/AndroidDev_Homework/exp04/Exp04MemoryGame，实验五单独整理到 D:/AndroidDev_Homework/exp05/Exp05MemoryGame，方便分别打开。保留原 applicationId，手机安装实验五时会更新实验四应用。
+
+实验五先完成程序和运行验证，实验报告待确认效果后编写。主分支保护与 PR 合并按实际 GitHub 提交流程处理。
+
+## 本次验证
+
+应用与测试 APK 构建成功；25 项模型单元测试通过；在 MAG-AN00 手机上通过 7 项界面流程测试。

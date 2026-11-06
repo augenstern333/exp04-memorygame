@@ -22,5 +22,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "exp03-multiactivity"
+rootProject.name = "exp05-memorygame"
 include(":app")

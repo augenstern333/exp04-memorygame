@@ -37,6 +37,12 @@ class PlayingCardView @JvmOverloads constructor(
     override fun getAccessibilityClassName(): CharSequence = android.widget.Button::class.java.name
 
     fun bind(card: Card, position: Int, animateChange: Boolean = true) {
+        if (!animateChange) {
+            resetAnimation()
+            shownFace = card.isChosen || card.isMatched
+            targetFace = shownFace
+            invalidate()
+        }
         suit = Card.validSuits.indexOf(card.suit).coerceAtLeast(0)
         val show = card.isChosen || card.isMatched
         val wasMatched = matched
@@ -132,6 +138,12 @@ class PlayingCardView @JvmOverloads constructor(
             canvas.drawRoundRect(bounds, radius, radius, paint)
             paint.style = Paint.Style.FILL
         }
+    }
+
+    fun resetAnimation() {
+        animate().cancel()
+        animate().withEndAction(null)
+        scaleX = 1f
     }
 
     override fun onDetachedFromWindow() {
