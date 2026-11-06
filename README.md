@@ -32,7 +32,9 @@ Android Studio 打开本目录；SDK 37、兼容 JDK（当前使用 JDK 24），
 
 本地实验四目录为 D:/AndroidDev_Homework/exp04/Exp04MemoryGame，实验五单独整理到 D:/AndroidDev_Homework/exp05/Exp05MemoryGame，方便分别打开。保留原 applicationId，手机安装实验五时会更新实验四应用。
 
-实验五先完成程序和运行验证，实验报告待确认效果后编写。主分支保护与 PR 合并按实际 GitHub 提交流程处理。
+实验五代码已推送至 Dev 分支，PR：https://github.com/augenstern333/exp04-memorygame/pull/1 。main 已启用 PR 审核保护，要求至少 1 次审核并对管理员生效；目前 PR 待审核，尚未合并。
+
+实验报告保存在项目目录外的 D:/AndroidDev_Homework/exp05/实验五+RecyclerView翻牌游戏APP_刘胜敏2024110523.docx，包含核心代码、真机截图、测试结果及问题分析。
 
 ## 本次验证
 
